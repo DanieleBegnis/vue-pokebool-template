@@ -1,13 +1,15 @@
 <script>
 import axios from 'axios';
 import { store } from './store.js';
-import HelloWorld from './components/HelloWorld.vue'
+import AppHeader from './components/AppHeader.vue'
+import AppMain from './components/AppMain.vue'
 
 //URL da chiamare  https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json'
 
 export default {
   components: {
-    HelloWorld
+    AppHeader,
+    AppMain
   },
   data(){
     return {
@@ -15,12 +17,29 @@ export default {
     }
   },
   methods: {
+    getPokemonFromApi() {
+      axios.get ('https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json')
+      .then((response)=> {
+      store.pokemonList = response.data.pokemon;
+      store.pokemonFilteredList = store.pokemonList;
+
+    })
+
+    },
+    filterPokemon(userInput) {
+      store.pokemonFilteredList = store.pokemonList.filter((p)=>p.name.toLowerCase().includes(userInput))
+    }
+  },
+
+  mounted() {
+    this.getPokemonFromApi();
   }
 }
 </script>
 
 <template>
-  <HelloWorld></HelloWorld>
+  <AppHeader @searchPokemon="filterPokemon"></AppHeader>
+  <AppMain></AppMain>
 </template>
 
 <style lang="scss">
